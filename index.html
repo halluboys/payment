@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Halaman Pembayaran</title>
+  <title>Halaman Pembayaran QRIS</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="container">
-    <h1>Halaman Pembayaran</h1>
+    <h1>Halaman Pembayaran QRIS</h1>
     <form id="paymentForm">
       <div class="form-group">
         <label for="name">Nama:</label>
@@ -23,9 +23,7 @@
       <div class="form-group">
         <label for="paymentMethod">Metode Pembayaran:</label>
         <select id="paymentMethod" name="paymentMethod" required>
-          <option value="creditCard">Kartu Kredit</option>
-          <option value="paypal">PayPal</option>
-          <option value="bankTransfer">Transfer Bank</option>
+          <option value="qris">QRIS</option>
         </select>
       </div>
 
@@ -37,6 +35,9 @@
       <p id="summaryName"></p>
       <p id="summaryAmount"></p>
       <p id="summaryPaymentMethod"></p>
+
+      <h3>Scan QRIS untuk Pembayaran:</h3>
+      <img src="https://cdn.jsdelivr.net/gh/6Kmfi6HP/EDtunnel@main/qris.png" alt="QRIS Pembayaran" class="qris-image"/>
     </div>
   </div>
 
