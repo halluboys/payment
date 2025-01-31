@@ -52,3 +52,10 @@ button:hover {
 #paymentSummary {
   margin-top: 30px;
 }
+
+.qris-image {
+  width: 100%;
+  max-width: 300px;
+  display: block;
+  margin: 20px auto;
+}
