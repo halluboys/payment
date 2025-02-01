@@ -1,46 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Halaman Pembayaran QRIS</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Custom Domain ke Cloudflare Worker</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        input, button { padding: 10px; margin: 10px; }
+        #result { margin-top: 20px; font-weight: bold; }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Halaman Pembayaran QRIS</h1>
-    <form id="paymentForm">
-      <div class="form-group">
-        <label for="name">Nama:</label>
-        <input type="text" id="name" name="name" required>
-      </div>
+    <h2>Tambah Custom Domain ke Cloudflare Worker</h2>
+    <input type="text" id="domain" placeholder="Masukkan custom domain">
+    <button onclick="addDomain()">Tambahkan</button>
+    <p id="result"></p>
 
-      <div class="form-group">
-        <label for="amount">Jumlah Pembayaran:</label>
-        <input type="number" id="amount" name="amount" required min="1">
-      </div>
+    <script>
+        async function addDomain() {
+            const domain = document.getElementById("domain").value.trim();
+            const resultElement = document.getElementById("result");
 
-      <div class="form-group">
-        <label for="paymentMethod">Metode Pembayaran:</label>
-        <select id="paymentMethod" name="paymentMethod" required>
-          <option value="qris">QRIS</option>
-        </select>
-      </div>
+            if (!domain) {
+                resultElement.innerText = "Masukkan domain terlebih dahulu!";
+                return;
+            }
 
-      <button type="submit">Bayar</button>
-    </form>
+            const CLOUDFLARE_ACCOUNT_ID = "39cfb1ce1ee880958c9a66e5da3bdf50"; // Ganti dengan Cloudflare Account ID
+            const CLOUDFLARE_API_TOKEN = "3IWeTRwilv8wjjz1x2pgeJwo4kCMJp6Pc-iiuy9v";   // Ganti dengan API Token Cloudflare
+            const WORKER_NAME = "indonesia";          // Ganti dengan nama Worker Anda
 
-    <div id="paymentSummary" style="display: none;">
-      <h2>Rincian Pembayaran</h2>
-      <p id="summaryName"></p>
-      <p id="summaryAmount"></p>
-      <p id="summaryPaymentMethod"></p>
+            const apiUrl = `https://api.cloudflare.com/client/v4/accounts/${39cfb1ce1ee880958c9a66e5da3bdf50}/workers/domains`;
 
-      <h3>Scan QRIS untuk Pembayaran:</h3>
-      <img src="https://cdn.jsdelivr.net/gh/6Kmfi6HP/EDtunnel@main/qris.png" alt="QRIS Pembayaran" class="qris-image"/>
-    </div>
-  </div>
+            const response = await fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${3IWeTRwilv8wjjz1x2pgeJwo4kCMJp6Pc-iiuy9v}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    hostname: domain,
+                    service: WORKER_NAME
+                })
+            });
 
-  <script src="script.js"></script>
+            const data = await response.json();
+
+            if (data.success) {
+                resultElement.innerText = `✅ Domain ${domain} berhasil ditambahkan ke Worker!`;
+            } else {
+                resultElement.innerText = `❌ Gagal: ${data.errors.map(err => err.message).join(", ")}`;
+            }
+        }
+    </script>
 </body>
 </html>
