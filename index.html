@@ -3,55 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Custom Domain ke Cloudflare Worker</title>
+    <title>Kustom Domain VLESS</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
         input, button { padding: 10px; margin: 10px; }
-        #result { margin-top: 20px; font-weight: bold; }
+        #result { margin-top: 20px; }
     </style>
 </head>
 <body>
-    <h2>Tambah Custom Domain ke Cloudflare Worker</h2>
-    <input type="text" id="domain" placeholder="Masukkan custom domain">
-    <button onclick="addDomain()">Tambahkan</button>
-    <p id="result"></p>
+
+    <h2>Tambahkan Kustom Domain VLESS</h2>
+    <input type="text" id="domainInput" placeholder="Masukkan domain kustom">
+    <button onclick="generateVless()">Generate Link</button>
+
+    <div id="result"></div>
 
     <script>
-        async function addDomain() {
-            const domain = document.getElementById("domain").value.trim();
-            const resultElement = document.getElementById("result");
-
+        function generateVless() {
+            let domain = document.getElementById("domainInput").value.trim();
             if (!domain) {
-                resultElement.innerText = "Masukkan domain terlebih dahulu!";
+                alert("Masukkan domain kustom!");
                 return;
             }
 
-            const CLOUDFLARE_ACCOUNT_ID = "39cfb1ce1ee880958c9a66e5da3bdf50"; // Ganti dengan Cloudflare Account ID
-            const CLOUDFLARE_API_TOKEN = "3IWeTRwilv8wjjz1x2pgeJwo4kCMJp6Pc-iiuy9v";   // Ganti dengan API Token Cloudflare
-            const WORKER_NAME = "indonesia";          // Ganti dengan nama Worker Anda
+            let workerURL = "https://indonesia.abihuy.workers.dev/"; // Ganti dengan URL Cloudflare Worker
+            let apiURL = `${workerURL}/?domain=${domain}`;
 
-            const apiUrl = `https://api.cloudflare.com/client/v4/accounts/${39cfb1ce1ee880958c9a66e5da3bdf50}/workers/domains`;
-
-            const response = await fetch(apiUrl, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${3IWeTRwilv8wjjz1x2pgeJwo4kCMJp6Pc-iiuy9v}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    hostname: domain,
-                    service: WORKER_NAME
+            fetch(apiURL)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("result").innerHTML = `
+                        <p><strong>VLESS Link:</strong></p>
+                        <textarea readonly rows="3" cols="50">${data.vless}</textarea>
+                    `;
                 })
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                resultElement.innerText = `✅ Domain ${domain} berhasil ditambahkan ke Worker!`;
-            } else {
-                resultElement.innerText = `❌ Gagal: ${data.errors.map(err => err.message).join(", ")}`;
-            }
+                .catch(error => console.error("Error:", error));
         }
     </script>
+
 </body>
 </html>
