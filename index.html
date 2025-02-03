@@ -3,41 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kustom Domain VLESS</title>
+    <title>Konfigurasi VLESS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
-        input, button { padding: 10px; margin: 10px; }
-        #result { margin-top: 20px; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #1e1e2f;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: #2c2c3e;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background: #4caf50;
+            color: white;
+            padding: 12px;
+            border: none;
+            width: 100%;
+            margin-top: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        .result {
+            background: #333344;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 5px;
+            word-wrap: break-word;
+            font-size: 14px;
+        }
+
+        .copy-btn {
+            background: #008cba;
+            margin-top: 10px;
+        }
+
+        .copy-btn:hover {
+            background: #0077a3;
+        }
+
+        .qr-container {
+            margin-top: 20px;
+        }
+
     </style>
 </head>
 <body>
 
-    <h2>Tambahkan Kustom Domain VLESS</h2>
-    <input type="text" id="domainInput" placeholder="Masukkan domain kustom">
-    <button onclick="generateVless()">Generate Link</button>
+    <div class="container">
+        <h1>Konfigurasi VLESS</h1>
+        <p>Masukkan UUID kamu dan dapatkan link konfigurasi VLESS</p>
 
-    <div id="result"></div>
+        <input type="text" id="uuidInput" placeholder="Masukkan UUID kamu" required>
+        <button onclick="generateConfig()">Buat Konfigurasi</button>
+
+        <div class="result" id="configOutput" style="display: none;"></div>
+        <button class="copy-btn" id="copyButton" style="display: none;" onclick="copyConfig()">Salin Link</button>
+
+        <div class="qr-container" id="qrCodeContainer" style="display: none;">
+            <h3>Scan QR Code</h3>
+            <div id="qrcode"></div>
+        </div>
+    </div>
 
     <script>
-        function generateVless() {
-            let domain = document.getElementById("domainInput").value.trim();
-            if (!domain) {
-                alert("Masukkan domain kustom!");
+        function generateConfig() {
+            const uuid = document.getElementById("uuidInput").value.trim();
+            const host = "indonesia.abihuy.workers.dev"; // Ganti dengan host asli kamu
+            const path = "/?ed=2048";
+            const configURL = `vless://${uuid}@${host}:443?encryption=none&security=tls&sni=${host}&fp=randomized&type=ws&host=${host}&path=${path}`;
+
+            if (uuid.length < 10) {
+                alert("Masukkan UUID yang valid!");
                 return;
             }
 
-            let workerURL = "https://indonesia.abihuy.workers.dev/"; // Ganti dengan URL Cloudflare Worker
-            let apiURL = `${workerURL}/?domain=${domain}`;
+            // Tampilkan hasil
+            document.getElementById("configOutput").innerHTML = `<strong>Konfigurasi VLESS:</strong><br> ${configURL}`;
+            document.getElementById("configOutput").style.display = "block";
+            document.getElementById("copyButton").style.display = "block";
+            document.getElementById("qrCodeContainer").style.display = "block";
 
-            fetch(apiURL)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("result").innerHTML = `
-                        <p><strong>VLESS Link:</strong></p>
-                        <textarea readonly rows="3" cols="50">${data.vless}</textarea>
-                    `;
-                })
-                .catch(error => console.error("Error:", error));
+            // Generate QR Code
+            document.getElementById("qrcode").innerHTML = "";
+            new QRCode(document.getElementById("qrcode"), {
+                text: configURL,
+                width: 180,
+                height: 180
+            });
+        }
+
+        function copyConfig() {
+            const text = document.getElementById("configOutput").innerText.replace("Konfigurasi VLESS:\n", "");
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Link konfigurasi berhasil disalin!");
+            }).catch(err => {
+                console.error("Gagal menyalin: ", err);
+            });
         }
     </script>
 
